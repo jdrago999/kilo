@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe ExchangeController do
+
   describe '#create' do
   end
 
