@@ -1,0 +1,6 @@
+---
+
+auth_tokens:
+  host: <%= ENV['MYSQL_HOSTNAME'] %>
+  port: 6379
+  db: 0

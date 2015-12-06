@@ -1,0 +1,27 @@
+
+infra:
+  build: .
+  dockerfile: ./Dockerfile
+  environment:
+    - TERM=xterm
+    - DB_ROOT_PASSWORD=distribot
+  ports:
+    - 3306
+  volumes:
+    - ./:/var/www/kilo
+  working_dir: /var/www/kilo
+  command: bash -c "sudo -E ./provision/infra.sh && tail -f /dev/null"
+
+kilo:
+  build: .
+  dockerfile: ./Dockerfile
+  volumes:
+    - ./:/var/www/kilo
+  environment:
+    - TERM=xterm
+    - MYSQL_USERNAME=root
+    - MYSQL_PASSWORD=distribot
+  working_dir: /var/www/kilo
+  links:
+    - infra
+  command: bash -c "tail -f /dev/null"

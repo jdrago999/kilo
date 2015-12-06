@@ -1,0 +1,42 @@
+upstream rails {
+  server localhost:3000;
+}
+
+server {
+  listen 80;
+
+  root <%= installation_path %>/public/;
+
+  client_max_body_size       3M;
+
+  location / {
+    try_files $uri @ruby;
+  }
+
+  location @ruby {
+    proxy_pass         http://rails;
+    proxy_set_header   Host $host;
+  }
+}
+
+server {
+  listen 443;
+
+  ssl on;
+  ssl_certificate /etc/nginx/certs/kilo/server.crt;
+  ssl_certificate_key /etc/nginx/certs/kilo/server.key;
+
+  root <%= installation_path %>/public/;
+
+  client_max_body_size       3M;
+
+  location / {
+    try_files $uri @ruby;
+  }
+
+  location @ruby {
+    proxy_pass         http://rails;
+    proxy_set_header   SSL-Enabled true;
+    proxy_set_header   Host $host;
+  }
+}
