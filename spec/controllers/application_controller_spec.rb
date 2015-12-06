@@ -97,6 +97,7 @@ describe ApplicationController do
         'content-type' => 'application/json',
         'ACCEPT' => 'application/json'
       }
+      @request.env['CONTENT_TYPE'] = 'application/json'
     end
     context 'when provided valid auth headers' do
       context 'when we make a POST request' do
@@ -131,13 +132,23 @@ describe ApplicationController do
       end
     end
     context 'when provided invalid auth headers' do
-      before do
-        string_to_sign = [ @form.to_json, @nonce, 'invalid-token' ].join('')
-        @headers['X-Auth-Digest'] = Digest::SHA1.new.hexdigest( string_to_sign )
-        post :foo, @form.to_json, {}, @headers
+      context 'because one of the headers is not provided' do
+        before do
+          post :foo, @form.to_json, {}, @headers
+        end
+        it 'returns 401 status' do
+          expect(response.status).to eq 401
+        end
       end
-      it 'returns 401 status' do
-        expect(response.status).to eq 401
+      context 'because the auth token is invalid' do
+        before do
+          string_to_sign = [ @form.to_json, @nonce, 'invalid-token' ].join('')
+          @headers['X-Auth-Digest'] = Digest::SHA1.new.hexdigest( string_to_sign )
+          post :foo, @form.to_json, {}, @headers
+        end
+        it 'returns 401 status' do
+          expect(response.status).to eq 401
+        end
       end
     end
   end
