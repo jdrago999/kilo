@@ -10,23 +10,23 @@ Rails.application.routes.draw do
         scope ':name' do
           get '' => 'exchange#show'
           delete '' => 'exchange#delete'
-          scope 'bindings' do
-            get '' => 'exchange#bindings'
+          scope 'bonds' do
+            get '' => 'exchange#bonds'
           end
         end
       end
-      scope 'queues' do
-        get '' => 'queue#list'
-        post '' => 'queue#create'
+      scope 'channels' do
+        get '' => 'channel#list'
+        post '' => 'channel#create'
         scope ':name' do
-          get '' => 'queue#show'
-          delete '' => 'queue#delete'
-          scope 'bindings' do
-            get '' =>'queue#bindings'
-            post '' =>'queue#create_binding'
+          get '' => 'channel#show'
+          delete '' => 'channel#delete'
+          scope 'bonds' do
+            get '' =>'channel#bonds'
+            post '' =>'channel#create_bond'
             scope ':id' do
-              get '' => 'queue#get_binding'
-              delete '' => 'queue#delete_binding'
+              get '' => 'channel#get_bond'
+              delete '' => 'channel#delete_bond'
             end
           end
           scope 'messages' do
