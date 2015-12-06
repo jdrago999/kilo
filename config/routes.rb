@@ -11,7 +11,7 @@ Rails.application.routes.draw do
           get '' => 'exchange#show'
           delete '' => 'exchange#delete'
           scope 'bindings' do
-            get '' => 'binding#list_by_exchange'
+            get '' => 'exchange#bindings'
           end
         end
       end
@@ -22,11 +22,11 @@ Rails.application.routes.draw do
           get '' => 'queue#show'
           delete '' => 'queue#delete'
           scope 'bindings' do
-            get '' =>'binding#list_by_queue'
-            post '' =>'binding#create'
+            get '' =>'queue#bindings'
+            post '' =>'queue#create_binding'
             scope ':id' do
-              get '' => 'binding#show'
-              delete '' => 'binding#delete'
+              get '' => 'queue#get_binding'
+              delete '' => 'queue#delete_binding'
             end
           end
           scope 'messages' do

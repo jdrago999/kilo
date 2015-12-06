@@ -8,7 +8,10 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
 require "sprockets/railtie"
-# require "rails/test_unit/railtie"
+
+unless Rails.env.production?
+  require 'byebug'
+end
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -35,6 +38,7 @@ module Kilo
     config.active_record.raise_in_transactional_callbacks = true
 
     # Load our redis connection info:
+    require 'yaml'
     config.redis_connections = YAML.load(
       ERB.new(
         File.read("#{Rails.root}/config/redis.yml")

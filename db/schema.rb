@@ -35,7 +35,7 @@ ActiveRecord::Schema.define(version: 20151206020624) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_ee1deeeaf0", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_56226146d3", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|
