@@ -4,13 +4,6 @@ Rails.application.routes.draw do
     post 'auth' => 'auth#auth'
 
     scope ':vhost' do
-      post '' => 'vhost#create'
-      get '' => 'vhost#list'
-      scope ':id', constrants: lambda {|req| req.params['id'] =~ /^\d+$/ } do
-        get '' => 'vhost#show'
-        put '' => 'vhost#update'
-        delete '' => 'vhost#delete'
-      end
       scope 'exchanges' do
         post '' => 'exchange#create'
         get '' => 'exchange#list'
