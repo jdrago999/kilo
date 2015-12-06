@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
 
   scope :api do
-    post '' => 'auth#auth'
+    post 'auth' => 'auth#auth'
 
     scope ':vhost' do
       scope 'exchanges' do
