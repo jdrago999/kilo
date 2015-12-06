@@ -7,9 +7,9 @@ Rails.application.routes.draw do
       post '' => 'vhost#create'
       get '' => 'vhost#list'
       scope ':id', constrants: lambda {|req| req.params['id'] =~ /^\d+$/ } do
-        get 'vhost#show'
-        put 'vhost#update'
-        delete 'vhost#delete'
+        get '' => 'vhost#show'
+        put '' => 'vhost#update'
+        delete '' => 'vhost#delete'
       end
       scope 'exchanges' do
         post '' => 'exchange#create'
@@ -29,11 +29,11 @@ Rails.application.routes.draw do
           get '' => 'queue#show'
           delete '' => 'queue#delete'
           scope 'bindings' do
-            get 'binding#list_by_queue'
-            post 'binding#create'
+            get '' =>'binding#list_by_queue'
+            post '' =>'binding#create'
             scope ':id' do
-              get 'binding#show'
-              delete 'binding#delete'
+              get '' => 'binding#show'
+              delete '' => 'binding#delete'
             end
           end
           scope 'messages' do
