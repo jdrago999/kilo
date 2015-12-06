@@ -10,8 +10,8 @@ class ApplicationController < ActionController::Base
 
   def sign_in(user)
     # Don't generate a new token if the old one is still valid:
-    token = self.redis.get("uid-to-auth-token:#{user.uid}") || user.generate_token
-    self.redis.set("uid-to-auth-token:#{user.uid}", token)
+    token = self.redis.get("kilo.auth-token:#{user.uid}") || user.generate_token
+    self.redis.set("kilo.auth-token:#{user.uid}", token)
     @user_id = user.id.to_i
     return token
   end
@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
       raise ::AuthorizationException.new
     end
 
-    token = self.redis.get("uid-to-auth-token:#{uid}") or raise ::AuthorizationException.new
+    token = self.redis.get("kilo.auth-token:#{uid}") or raise ::AuthorizationException.new
     calculated_digest = Digest::SHA2.new.hexdigest( [request.raw_post, nonce, token].join('') )
 
     if digest.downcase == calculated_digest.downcase

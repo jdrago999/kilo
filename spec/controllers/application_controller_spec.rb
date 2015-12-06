@@ -36,7 +36,7 @@ describe ApplicationController do
       end
 
       it 'puts the token in redis (uid -> [atok])' do
-        uid_to_atok_token = @redis.get("uid-to-auth-token:#{@user.uid}")
+        uid_to_atok_token = @redis.get("kilo.auth-token:#{@user.uid}")
         expect(uid_to_atok_token).to eq @token
       end
     end
