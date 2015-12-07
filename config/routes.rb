@@ -29,6 +29,9 @@ Rails.application.routes.draw do
           scope 'subscribe' do
             get '' => 'channel#subscribe'
           end
+          scope 'publish' do
+            post '' => 'channel#publish'
+          end
           scope 'messages' do
             post '' => 'message#create'
             scope ':message_id' do

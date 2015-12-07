@@ -18,7 +18,7 @@ class AddQueueingStructures < ActiveRecord::Migration
     end
 
     add_index :channels, [:vhost_id, :name], unique: true
-    add_foreign_key :exchanges, :vhosts,
+    add_foreign_key :channels, :vhosts,
                     dependent: :delete
 
     create_table :bonds do |t|
