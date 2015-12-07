@@ -12,6 +12,8 @@ describe Vhost do
 
   describe 'relationships' do
     it { should have_many(:users).through(:vhost_users) }
+    it { should have_many :channels }
+    it { should have_many :exchanges }
   end
 end
 

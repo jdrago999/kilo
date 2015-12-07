@@ -13,11 +13,17 @@ class ApplicationController < ActionController::Base
     token = self.redis.get("kilo.auth-token:#{user.uid}") || user.generate_token
     self.redis.set("kilo.auth-token:#{user.uid}", token)
     @user_id = user.id.to_i
-    return token
+    @current_user = user
+    session[:uid] = user.uid
+    return session[:auth_token] = token
   end
 
   rescue_from AuthorizationException do
     render text: "Access Denied", status: :unauthorized
+  end
+
+  rescue_from ActionController::RoutingError do
+    render text: "Not Found", status: :not_found
   end
 
   def current_user
@@ -25,25 +31,55 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by(id: @user_id)
   end
 
+  def current_vhost
+    @current_vhost
+  end
+
+  def current_vhost_user
+    @current_vhost_user
+  end
+
+  def current_channel
+    @current_channel
+  end
+
   protected
 
+  def not_found
+    raise ::ActionController::RoutingError.new 'not found'
+  end
+
   def authenticate!
-    nonce = http_header :x_auth_nonce
-    uid = http_header :x_auth_uid
-    digest = http_header :x_auth_digest
-    unless nonce && uid && digest
-      raise ::AuthorizationException.new
-    end
+    sent_token = session[:auth_token]
+    token = self.redis.get("kilo.auth-token:#{session[:uid]}") or raise ::AuthorizationException.new
 
-    token = self.redis.get("kilo.auth-token:#{uid}") or raise ::AuthorizationException.new
-    calculated_digest = Digest::SHA2.new.hexdigest( [request.raw_post, nonce, token].join('') )
+    if params.has_key? :vhost
+      # Also check vhost:
+      @current_vhost = Vhost.find_by(name: params[:vhost]) or raise ::ActionController::RoutingError.new 'not found'
 
-    if digest.downcase == calculated_digest.downcase
-      @user = User.find_by(uid: uid)
-      @user_id = @user.id
-    else
-      raise ::AuthorizationException.new
+      # Also check the vhost_user exists:
+      @current_vhost_user = current_user.vhost_users.find_by(vhost_id: @current_vhost.id) or raise ::AuthorizationException.new
     end
+  end
+
+  def require_vhost_conf!
+    current_vhost_user.conf or raise ::AuthorizationException.new
+  end
+
+  def require_vhost_read!
+    current_vhost_user.read or raise ::AuthorizationException.new
+  end
+
+  def require_vhost_write!
+    current_vhost_user.write or raise ::AuthorizationException.new
+  end
+
+  def require_valid_vhost!
+    @current_vhost = Vhost.find_by(name: params[:vhost]) or raise ::ActionController::RoutingError.new 'not found'
+  end
+
+  def require_valid_channel!
+    @current_channel = current_vhost.channels.find_by(name: params[:channel]) or raise ::ActionController::RoutingError.new 'not found'
   end
 
   def parse_json_params

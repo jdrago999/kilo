@@ -90,64 +90,33 @@ describe ApplicationController do
       @form = {
         hello: :world
       }
-      @nonce = SecureRandom.uuid
-      @headers = {
-        'X-Auth-Uid' => @user.uid,
-        'X-Auth-Nonce' => @nonce,
-        'content-type' => 'application/json',
-        'ACCEPT' => 'application/json'
-      }
-      @request.env['CONTENT_TYPE'] = 'application/json'
     end
     context 'when provided valid auth headers' do
       context 'when we make a POST request' do
         before do
-          string_to_sign = [ @form.to_json, @nonce, @token ].join('')
-          @headers['X-Auth-Digest'] = Digest::SHA2.new.hexdigest( string_to_sign )
-          post :foo, @form.to_json, {}, @headers
+          request.headers['CONTENT_TYPE'] = 'application/json'
+          post :foo, @form.to_json
         end
         it 'returns a 200 status' do
           expect(response.status).to eq 200
         end
-        it 'sets @user and @user_id' do
-          expect(assigns(:user)).to be_a User
-          expect(assigns(:user).id).to eq @user.id
+        it 'sets @current_user and @user_id' do
+          expect(assigns(:current_user)).to be_a User
+          expect(assigns(:current_user).id).to eq @user.id
           expect(assigns(:user_id)).to eq @user.id
         end
       end
       context 'when we make a GET request' do
         before do
-          string_to_sign = [ @form.to_json, @nonce, @token ].join('')
-          @headers['X-Auth-Digest'] = Digest::SHA2.new.hexdigest( string_to_sign )
-          get :foo, @form.to_json, {}, @headers
+          get :foo, @form
         end
         it 'returns a 200 status' do
           expect(response.status).to eq 200
         end
-        it 'sets @user and @user_id' do
-          expect(assigns(:user)).to be_a User
-          expect(assigns(:user).id).to eq @user.id
+        it 'sets @current_user and @user_id' do
+          expect(assigns(:current_user)).to be_a User
+          expect(assigns(:current_user).id).to eq @user.id
           expect(assigns(:user_id)).to eq @user.id
-        end
-      end
-    end
-    context 'when provided invalid auth headers' do
-      context 'because one of the headers is not provided' do
-        before do
-          post :foo, @form.to_json, {}, @headers
-        end
-        it 'returns 401 status' do
-          expect(response.status).to eq 401
-        end
-      end
-      context 'because the auth token is invalid' do
-        before do
-          string_to_sign = [ @form.to_json, @nonce, 'invalid-token' ].join('')
-          @headers['X-Auth-Digest'] = Digest::SHA1.new.hexdigest( string_to_sign )
-          post :foo, @form.to_json, {}, @headers
-        end
-        it 'returns 401 status' do
-          expect(response.status).to eq 401
         end
       end
     end
