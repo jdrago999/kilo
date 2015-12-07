@@ -12,16 +12,16 @@ class ExchangeController < ApplicationController
 
   def create
     exchange = current_vhost.exchanges.create(name: params[:name])
-    unless exchange.valid?
+    if exchange.valid?
       return render json: {
-        success: false,
-        error: exchange.errors.map{|name, msg| "#{name} #{msg}" }
-      }, status: 400
-    else
-      render json: {
         success: true,
         path: show_exchange_path(vhost: exchange.vhost.name, exchange: exchange.name)
       }, status: 201
+    else
+      return render json: {
+        success: false,
+        errors: exchange.errors.map{|name, msg| "#{name} #{msg}" }
+      }, status: 400
     end
   end
 

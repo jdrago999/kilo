@@ -24,6 +24,23 @@ describe ExchangeController do
             it 'returns a 400 response' do
               expect(response.status).to eq 400
             end
+            it 'returns a JSON body' do
+              expect{JSON.parse(response.body)}.not_to raise_error
+            end
+            context 'the JSON body' do
+              before do
+                @json = JSON.parse(response.body, symbolize_names: true)
+              end
+              it 'contains success:false' do
+                expect(@json).to have_key :success
+                expect(@json[:success]).to be_falsey
+              end
+              it 'contains error' do
+                expect(@json).to have_key :errors
+                expect(@json[:errors]).to be_an Array
+                expect(@json[:errors]).not_to be_empty
+              end
+            end
           end
           context 'is not already used' do
             before do

@@ -19,7 +19,7 @@ Rails.application.routes.draw do
         get '' => 'channel#list'
         post '' => 'channel#create'
         scope ':channel' do
-          get '' => 'channel#show'
+          get '' => 'channel#show', as: :show_channel
           delete '' => 'channel#delete'
           scope 'bonds' do
             get '' =>'channel#bonds'

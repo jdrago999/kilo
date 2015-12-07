@@ -62,6 +62,10 @@ class ApplicationController < ActionController::Base
     current_vhost_user.read or raise ::AuthorizationException.new
   end
 
+  def require_vhost_write!
+    current_vhost_user.write or raise ::AuthorizationException.new
+  end
+
   def require_valid_vhost!
     @current_vhost = Vhost.find_by(name: params[:vhost]) or return ::ActionController::RoutingError.new 'not found'
   end
