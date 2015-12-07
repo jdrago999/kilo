@@ -39,6 +39,10 @@ class ApplicationController < ActionController::Base
     @current_vhost_user
   end
 
+  def current_channel
+    @current_channel
+  end
+
   protected
 
   def authenticate!
@@ -67,7 +71,11 @@ class ApplicationController < ActionController::Base
   end
 
   def require_valid_vhost!
-    @current_vhost = Vhost.find_by(name: params[:vhost]) or return ::ActionController::RoutingError.new 'not found'
+    @current_vhost = Vhost.find_by(name: params[:vhost]) or raise ::ActionController::RoutingError.new 'not found'
+  end
+
+  def require_valid_channel!
+    @current_channel = current_vhost.channels.find_by(name: params[:channel]) or raise ::ActionController::RoutingError.new 'not found'
   end
 
   def parse_json_params
