@@ -22,8 +22,8 @@ Rails.application.routes.draw do
           scope 'bonds' do
             get '' =>'channel#bonds'
             scope ':bond_id' do
-              get '' => 'channel#get_bond', as: :show_bond
-              delete '' => 'channel#delete_bond'
+              get '' => 'bond#show', as: :show_bond
+              delete '' => 'bond#delete'
             end
           end
           scope 'messages' do

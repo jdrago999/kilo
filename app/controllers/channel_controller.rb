@@ -76,7 +76,9 @@ class ChannelController < ApplicationController
     render json: {
       success: true,
       items: current_channel.bonds.map do |bond|
-        {id: bond.id}
+        {
+          id: bond.id
+        }
       end
     }
   end
