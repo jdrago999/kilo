@@ -5,6 +5,7 @@ require 'simplecov'
 SimpleCov.start 'rails' do
   add_filter '.vendor/'
   add_filter 'spec/'
+  add_filter 'lib/kilo'
 end
 SimpleCov.minimum_coverage 97
 require 'rspec/rails'

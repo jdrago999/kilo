@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20151206221121) do
     t.datetime "updated_at",            null: false
   end
 
-  add_index "bonds", ["channel_id"], name: "fk_rails_37ce944080", using: :btree
+  add_index "bonds", ["channel_id"], name: "fk_rails_a49f73aa1b", using: :btree
   add_index "bonds", ["exchange_id", "channel_id"], name: "index_bonds_on_exchange_id_and_channel_id", unique: true, using: :btree
 
   create_table "channels", force: :cascade do |t|
@@ -64,7 +64,7 @@ ActiveRecord::Schema.define(version: 20151206221121) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_2735da1231", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_3cf3b257c1", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|
