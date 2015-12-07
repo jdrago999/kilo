@@ -3,7 +3,8 @@ class ChannelController < ApplicationController
   before_filter :authenticate!
   before_filter :require_valid_vhost!
   before_filter :require_valid_channel!, only: [
-    :bind
+    :bind,
+    :delete
   ]
   before_filter :require_vhost_write!, only: [
     :create,
@@ -46,5 +47,12 @@ class ChannelController < ApplicationController
         errors: bond.errors.map{|name, msg| "#{name} #{msg}" }
       }, status: 400
     end
+  end
+
+  def delete
+    current_channel.delete
+    render json: {
+      success: true
+    }
   end
 end

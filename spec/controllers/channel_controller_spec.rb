@@ -201,4 +201,43 @@ describe ChannelController do
       end
     end
   end
+
+  describe '#delete' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @user = @vhost_user.user
+      @vhost = @vhost_user.vhost
+      controller.sign_in(@vhost_user.user)
+    end
+    context 'when the channel' do
+      context 'exists' do
+        before do
+          @channel = FactoryGirl.create(:channel, vhost: @vhost)
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name
+          }
+          delete :delete, @form
+        end
+        it 'returns 200' do
+          expect(response.status).to eq 200
+        end
+        it 'deletes the channel' do
+          expect{@channel.reload}.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+      context 'does not exist' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: 'invalid-channel'
+          }
+          delete :delete, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
+  end
 end
