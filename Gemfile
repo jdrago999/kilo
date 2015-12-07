@@ -14,8 +14,8 @@ gem 'jbuilder', '~> 2.0'
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
-# Use Thin as the app server
-gem 'thin'
+# Use Puma as the app server
+gem 'puma'
 gem 'dotenv'
 gem 'redis'
 gem 'uuid'

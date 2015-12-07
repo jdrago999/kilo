@@ -1,5 +1,6 @@
 
 class ChannelController < ApplicationController
+  include ActionController::Live
   before_filter :authenticate!
   before_filter :require_valid_vhost!
   before_filter :require_valid_channel!, only: [
@@ -7,7 +8,8 @@ class ChannelController < ApplicationController
     :delete,
     :bonds,
     :get_bond,
-    :unbind
+    :unbind,
+    :subscribe
   ]
   before_filter :require_vhost_write!, only: [
     :create,
@@ -17,7 +19,8 @@ class ChannelController < ApplicationController
   before_filter :require_vhost_read!, only: [
     :list,
     :bonds,
-    :get_bond
+    :get_bond,
+    :subscribe
   ]
 
   def create
@@ -107,4 +110,22 @@ class ChannelController < ApplicationController
       return not_found
     end
   end
+
+  def subscribe
+    response.headers['Content-Type'] = 'text/event-stream'
+    sse = Kilo::SSE.new(response.stream)
+    begin
+      while true do
+        messages = []
+        sse.write({messages: messages}, {event: 'refresh'})
+        sleep 1
+      end
+    rescue IOError
+      # Render text just to keep rspec happy, so we don't get missing template errors.
+      render text: ''
+    ensure
+      sse.close
+    end
+  end
+
 end

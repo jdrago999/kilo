@@ -5,9 +5,8 @@ require 'simplecov'
 SimpleCov.start 'rails' do
   add_filter '.vendor/'
   add_filter 'spec/'
-  add_filter 'lib/kilo'
 end
-SimpleCov.minimum_coverage 97
+SimpleCov.minimum_coverage 100
 require 'rspec/rails'
 require 'email_spec'
 require 'webmock/rspec'
@@ -71,3 +70,13 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 end
+
+def response_stream_data
+  stream_body = response.stream.instance_variable_get(:@buf).instance_variable_get(:@que).first
+  result = stream_body.split("\n").map do |line|
+    captures = /^(\w+)\:\s*(.+?)$/.match( line ).captures
+    {captures.first.to_sym => captures.last}
+  end.to_a.reduce({}, :merge)
+  JSON.parse(result[:data], symbolize_names: true)
+end
+

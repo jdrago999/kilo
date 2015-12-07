@@ -490,4 +490,59 @@ describe ChannelController do
       end
     end
   end
+
+  describe '#subscribe' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @user = @vhost_user.user
+      @vhost = @vhost_user.vhost
+      controller.sign_in(@vhost_user.user)
+    end
+    context 'when the channel' do
+      context 'exists' do
+        before do
+          @channel = FactoryGirl.create(:channel, vhost: @vhost)
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name
+          }
+        end
+        context 'and the client is still connected' do
+          context 'and there are no messages' do
+            before do
+              get :subscribe, @form
+            end
+            it 'returns 200' do
+              expect(response.status).to eq 200
+            end
+            it 'returns an empty list of messages' do
+              expect(response_stream_data[:messages]).to be_an Array
+              expect(response_stream_data[:messages]).to be_empty
+            end
+          end
+        end
+        context 'and the client has disconnected' do
+          before do
+            expect_any_instance_of(Kilo::SSE).to receive(:write){ raise IOError }
+          end
+          it 'closes the SSE connection' do
+            expect_any_instance_of(Kilo::SSE).to receive(:close).and_call_original
+            get :subscribe, @form
+          end
+        end
+      end
+      context 'does not exist' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: 'invalid-channel'
+          }
+          get :subscribe, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
+  end
 end

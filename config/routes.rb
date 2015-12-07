@@ -26,6 +26,9 @@ Rails.application.routes.draw do
               delete '' => 'channel#unbind'
             end
           end
+          scope 'subscribe' do
+            get '' => 'channel#subscribe'
+          end
           scope 'messages' do
             post '' => 'message#create'
             scope ':message_id' do
