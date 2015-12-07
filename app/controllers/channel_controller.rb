@@ -10,6 +10,9 @@ class ChannelController < ApplicationController
     :create,
     :bind
   ]
+  before_filter :require_vhost_read!, only: [
+    :list
+  ]
 
   def create
     channel = current_vhost.channels.first_or_create( name: params[:name] )
@@ -47,6 +50,17 @@ class ChannelController < ApplicationController
         errors: bond.errors.map{|name, msg| "#{name} #{msg}" }
       }, status: 400
     end
+  end
+
+  def list
+    render json: {
+      success: true,
+      items: current_vhost.channels.map do |channel|
+        {
+          name: channel.name
+        }
+      end
+    }
   end
 
   def delete

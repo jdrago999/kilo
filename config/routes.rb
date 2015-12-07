@@ -10,9 +10,6 @@ Rails.application.routes.draw do
         scope ':exchange' do
           get '' => 'exchange#show', as: :show_exchange
           delete '' => 'exchange#delete'
-          scope 'bonds' do
-            get '' => 'exchange#bonds'
-          end
         end
       end
       scope 'channels' do
