@@ -5,7 +5,8 @@ class ChannelController < ApplicationController
   before_filter :require_valid_channel!, only: [
     :bind,
     :delete,
-    :bonds
+    :bonds,
+    :get_bond
   ]
   before_filter :require_vhost_write!, only: [
     :create,
@@ -13,7 +14,8 @@ class ChannelController < ApplicationController
   ]
   before_filter :require_vhost_read!, only: [
     :list,
-    :bonds
+    :bonds,
+    :get_bond
   ]
 
   def create
@@ -81,5 +83,15 @@ class ChannelController < ApplicationController
         }
       end
     }
+  end
+
+  def get_bond
+    if bond = current_channel.bonds.find_by(id: params[:bond_id])
+      render json: {
+        id: bond.id
+      }
+    else
+      return not_found
+    end
   end
 end
