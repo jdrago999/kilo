@@ -6,11 +6,13 @@ class ChannelController < ApplicationController
     :bind,
     :delete,
     :bonds,
-    :get_bond
+    :get_bond,
+    :unbind
   ]
   before_filter :require_vhost_write!, only: [
     :create,
-    :bind
+    :bind,
+    :unbind
   ]
   before_filter :require_vhost_read!, only: [
     :list,
@@ -89,6 +91,17 @@ class ChannelController < ApplicationController
     if bond = current_channel.bonds.find_by(id: params[:bond_id])
       render json: {
         id: bond.id
+      }
+    else
+      return not_found
+    end
+  end
+
+  def unbind
+    if bond = current_channel.bonds.find_by(id: params[:bond_id])
+      bond.delete
+      render json: {
+        success: true
       }
     else
       return not_found

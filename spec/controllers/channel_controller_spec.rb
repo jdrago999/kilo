@@ -445,4 +445,49 @@ describe ChannelController do
       end
     end
   end
+
+  describe '#unbind' do
+    before do
+      @bond = FactoryGirl.create(:bond)
+      @channel = @bond.channel
+      @vhost = @channel.vhost
+      @vhost_user = FactoryGirl.create(:vhost_user, vhost: @vhost)
+      @user = @vhost_user.user
+      controller.sign_in @user
+    end
+    context 'when the id given' do
+      context 'is valid' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name,
+            bond_id: @bond.id
+          }
+          delete :unbind, @form
+        end
+        it 'returns 200' do
+          expect(response.status).to eq 200
+        end
+        it 'returns JSON' do
+          expect{JSON.parse(response.body)}.not_to raise_error
+        end
+        it 'deletes the bond' do
+          expect{@bond.reload}.to raise_error ActiveRecord::RecordNotFound
+        end
+      end
+      context 'is invalid' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name,
+            bond_id: 'fake-bond-id'
+          }
+          delete :unbind, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
+  end
 end
