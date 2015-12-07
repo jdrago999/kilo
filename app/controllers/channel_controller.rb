@@ -4,14 +4,16 @@ class ChannelController < ApplicationController
   before_filter :require_valid_vhost!
   before_filter :require_valid_channel!, only: [
     :bind,
-    :delete
+    :delete,
+    :bonds
   ]
   before_filter :require_vhost_write!, only: [
     :create,
     :bind
   ]
   before_filter :require_vhost_read!, only: [
-    :list
+    :list,
+    :bonds
   ]
 
   def create
@@ -67,6 +69,15 @@ class ChannelController < ApplicationController
     current_channel.delete
     render json: {
       success: true
+    }
+  end
+
+  def bonds
+    render json: {
+      success: true,
+      items: current_channel.bonds.map do |bond|
+        {id: bond.id}
+      end
     }
   end
 end

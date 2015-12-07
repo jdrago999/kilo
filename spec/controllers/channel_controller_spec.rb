@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe ChannelController do
+
   describe '#create' do
     before do
       @vhost_user = FactoryGirl.create(:vhost_user)
@@ -201,6 +202,7 @@ describe ChannelController do
       end
     end
   end
+
   describe '#list' do
     before do
       @vhost_user = FactoryGirl.create(:vhost_user)
@@ -327,6 +329,76 @@ describe ChannelController do
         end
         it 'returns 404' do
           expect(response.status).to eq 404
+        end
+      end
+    end
+  end
+
+  describe '#bonds' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @user = @vhost_user.user
+      @vhost = @vhost_user.vhost
+      @channel = FactoryGirl.create(:channel, vhost: @vhost)
+      @exchange = FactoryGirl.create(:exchange, vhost: @vhost)
+      controller.sign_in(@vhost_user.user)
+    end
+    context 'when the channel has bonds' do
+      before do
+        @bond = FactoryGirl.create(:bond, channel: @channel, exchange: @exchange)
+        @form = {
+          vhost: @vhost.name,
+          channel: @channel.name,
+        }
+        get :bonds, @form
+      end
+      it 'returns a 200 response' do
+        expect(response.status).to eq 200
+      end
+      it 'returns JSON' do
+        expect{JSON.parse(response.body)}.not_to raise_error
+      end
+      context 'the JSON returned' do
+        before do
+          @json = JSON.parse(response.body, symbolize_names: true)
+        end
+        it 'contains success:true' do
+          expect(@json).to have_key :success
+          expect(@json[:success]).to be_truthy
+        end
+        it 'contains a list of items containing the bonds' do
+          expect(@json).to have_key :items
+          expect(@json[:items]).to be_an Array
+          expect(@json[:items].count).to eq @channel.bonds.count
+        end
+      end
+    end
+    context 'when the channel has no bonds' do
+      before do
+        @form = {
+          vhost: @vhost.name,
+          channel: @channel.name,
+        }
+        get :bonds, @form
+      end
+      it 'returns a 200 response' do
+        expect(response.status).to eq 200
+      end
+      it 'returns JSON' do
+        expect{JSON.parse(response.body)}.not_to raise_error
+      end
+      context 'the JSON returned' do
+        before do
+          @json = JSON.parse(response.body, symbolize_names: true)
+        end
+        it 'contains success:true' do
+          expect(@json).to have_key :success
+          expect(@json[:success]).to be_truthy
+        end
+        it 'contains an empty list of items' do
+          expect(@json).to have_key :items
+          expect(@json[:items]).to be_an Array
+          expect(@json[:items]).to be_empty
         end
       end
     end
