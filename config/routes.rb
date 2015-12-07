@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  scope :api do
+  scope :api, format: false do
     post 'auth' => 'auth#auth'
 
     scope ':vhost' do
