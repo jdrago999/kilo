@@ -54,8 +54,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def require_conf!
+  def require_vhost_conf!
     current_vhost_user.conf or raise ::AuthorizationException.new
+  end
+
+  def require_vhost_read!
+    current_vhost_user.read or raise ::AuthorizationException.new
   end
 
   def require_valid_vhost!

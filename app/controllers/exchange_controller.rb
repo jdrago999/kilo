@@ -3,8 +3,11 @@ class ExchangeController < ApplicationController
 
   before_filter :authenticate!
   before_filter :require_valid_vhost!
-  before_filter :require_conf!, only: [
+  before_filter :require_vhost_conf!, only: [
     :create
+  ]
+  before_filter :require_vhost_read!, only: [
+    :list
   ]
 
   def create
@@ -20,6 +23,17 @@ class ExchangeController < ApplicationController
         path: show_exchange_path(vhost: exchange.vhost.name, exchange: exchange.name)
       }, status: 201
     end
+  end
+
+  def list
+    render json: {
+      success: true,
+      items: current_vhost.exchanges.map do |exchange|
+        {
+          name: exchange.name
+        }
+      end
+    }
   end
 
 end
