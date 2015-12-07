@@ -36,4 +36,15 @@ class ExchangeController < ApplicationController
     }
   end
 
+  def delete
+    if exchange = current_vhost.exchanges.find_by(name: params[:exchange])
+      exchange.delete
+      render json: {
+        success: true
+      }
+    else
+      return not_found
+    end
+  end
+
 end

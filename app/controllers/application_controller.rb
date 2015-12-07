@@ -45,6 +45,10 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def not_found
+    raise ::ActionController::RoutingError.new 'not found'
+  end
+
   def authenticate!
     sent_token = session[:auth_token]
     token = self.redis.get("kilo.auth-token:#{session[:uid]}") or raise ::AuthorizationException.new

@@ -176,12 +176,48 @@ describe ExchangeController do
     end
   end
 
-  describe '#show' do
-  end
-
   describe '#delete' do
-  end
-
-  describe '#bindings' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @vhost = @vhost_user.vhost
+      @user = @vhost_user.user
+      controller.sign_in @user
+    end
+    context 'when the exchange' do
+      context 'exists' do
+        before do
+          @exchange = FactoryGirl.create(:exchange, vhost: @vhost)
+          @form = {
+            exchange: @exchange.name,
+            vhost: @vhost.name
+          }
+          delete :delete, @form
+        end
+        it 'returns 200' do
+          expect(response.status).to eq 200
+        end
+        it 'deletes the exchange' do
+          expect{@exchange.reload}.to raise_error ActiveRecord::RecordNotFound
+        end
+        it 'returns JSON' do
+          expect{JSON.parse(response.body)}.not_to raise_error
+          json = JSON.parse(response.body)
+          expect(json).to have_key 'success'
+          expect(json['success']).to be_truthy
+        end
+      end
+      context 'does not exist' do
+        before do
+          @form = {
+            exchange: 'invalid-exchange',
+            vhost: @vhost.name
+          }
+          delete :delete, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
   end
 end
