@@ -549,19 +549,4 @@ describe ChannelController do
     end
   end
 
-  describe '#publish' do
-    context 'when the channel' do
-      context 'exists' do
-        it 'returns 200'
-        it 'returns JSON'
-        context 'the JSON returned' do
-          it 'has success: true'
-        end
-        it 'adds a message to each exchange it is bound to'
-      end
-      context 'does not exist' do
-        it 'returns 404'
-      end
-    end
-  end
 end

@@ -130,14 +130,4 @@ class ChannelController < ApplicationController
     end
   end
 
-  def publish
-    message = Message.create!(data: params[:message])
-
-
-    render json: {
-      success: true,
-      path: 'foo'
-    }
-  end
-
 end

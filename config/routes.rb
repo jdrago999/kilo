@@ -10,6 +10,7 @@ Rails.application.routes.draw do
         scope ':exchange' do
           get '' => 'exchange#show', as: :show_exchange
           delete '' => 'exchange#delete'
+          post 'publish' => 'exchange#publish'
         end
       end
       scope 'channels' do
@@ -28,9 +29,6 @@ Rails.application.routes.draw do
           end
           scope 'subscribe' do
             get '' => 'channel#subscribe'
-          end
-          scope 'publish' do
-            post '' => 'channel#publish'
           end
           scope 'messages' do
             scope ':message_id' do

@@ -9,6 +9,9 @@ class ExchangeController < ApplicationController
   before_filter :require_vhost_read!, only: [
     :list
   ]
+  before_filter :require_vhost_write!, only: [
+    :publish
+  ]
 
   def create
     exchange = current_vhost.exchanges.create(name: params[:name])
@@ -47,4 +50,16 @@ class ExchangeController < ApplicationController
     end
   end
 
+
+  def publish
+byebug
+    exchange = current_vhost.exchanges.find_by(name: params[:exchange])
+    message = exchange.messages.create(data: params[:message])
+byebug
+
+    render json: {
+      success: true,
+      path: 'foo'
+    }
+  end
 end

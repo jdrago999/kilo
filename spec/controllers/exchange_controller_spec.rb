@@ -220,4 +220,47 @@ describe ExchangeController do
       end
     end
   end
+
+  describe '#publish' do
+    context 'when the channel' do
+      context 'exists' do
+        context 'and the channel' do
+          context 'is exclusive' do
+            # Exclusive channels are read-only.
+            it 'returns a 400'
+          end
+          context 'is not exclusive' do
+            before do
+              @vhost_user = FactoryGirl.create(:vhost_user)
+              @vhost = @vhost_user.vhost
+              @user = @vhost_user.user
+              @channel = FactoryGirl.create(:channel, vhost: @vhost)
+              @exchange = FactoryGirl.create(:exchange, vhost: @vhost)
+              @bond = FactoryGirl.create(:bond, channel: @channel, exchange: @exchange)
+              @exchange = @bond.exchange
+              controller.sign_in @user
+              post :publish, {
+                vhost: @vhost.name,
+                channel: @channel.name,
+                exchange: @exchange.name,
+                message: {hello: :world}.to_json
+              }
+            end
+            it 'returns 200' do
+byebug
+puts ""
+            end
+            it 'returns JSON'
+            context 'the JSON returned' do
+              it 'has success: true'
+            end
+            it 'adds a message to the exchange'
+          end
+        end
+      end
+      context 'does not exist' do
+        it 'returns 404'
+      end
+    end
+  end
 end
