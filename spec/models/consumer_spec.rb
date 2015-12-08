@@ -17,5 +17,7 @@ describe Consumer do
   describe 'relationships' do
     it { should belong_to :channel }
     it { should belong_to :vhost_user }
+    it { should have_many :consumer_messages }
+    it { should have_many(:messages).through(:consumer_messages) }
   end
 end

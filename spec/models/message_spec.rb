@@ -10,5 +10,6 @@ describe Message do
   end
 
   describe 'relationships' do
+    it { should have_many(:consumers).through(:consumer_messages) }
   end
 end
