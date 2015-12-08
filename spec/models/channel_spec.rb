@@ -14,6 +14,7 @@ describe Channel do
   describe 'relationships' do
     it { should belong_to :vhost }
     it { should have_many :consumers }
+    it { should have_many(:consumer_messages).through(:consumers) }
   end
 
   describe '#publish(message_data)' do
@@ -53,11 +54,37 @@ describe Channel do
   end
 
   describe '#broadcast(message_data)' do
+    before do
+      @channel = FactoryGirl.create(:channel)
+    end
     context 'when there are consumers' do
-      it 'assigns the message to all of the consumers, at once'
+      before do
+        @vhost = @channel.vhost
+        @vhost_user1 = FactoryGirl.create(:vhost_user, vhost: @vhost)
+        @consumer1 = FactoryGirl.create(:consumer, vhost_user: @vhost_user1, channel: @channel)
+        @vhost_user2 = FactoryGirl.create(:vhost_user, vhost: @vhost)
+        @consumer2 = FactoryGirl.create(:consumer, vhost_user: @vhost_user2, channel: @channel)
+        @message_data = SecureRandom.hex(32)
+
+        # Publishing returns the id of the consumer the message was assigned to.
+        @total_assigned = @channel.broadcast(@message_data)
+      end
+      it 'assigns the message to all of the consumers, at once' do
+        expect(@total_assigned).to eq 2
+        expect(@consumer1.messages.first.data).to eq @message_data
+        expect(@consumer2.messages.first.data).to eq @message_data
+      end
     end
     context 'when there are no consumers' do
-      it 'does not assign the message'
+      before do
+        @message_data = SecureRandom.hex(32)
+
+        # Publishing returns the id of the consumer the message was assigned to.
+        @total_assigned = @channel.broadcast(@message_data)
+      end
+      it 'does not assign the message' do
+        expect(@total_assigned).to eq 0
+      end
     end
   end
 end

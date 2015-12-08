@@ -5,6 +5,7 @@ class Channel < ActiveRecord::Base
   validates_uniqueness_of :name, scope: :vhost_id
 
   has_many :consumers
+  has_many :consumer_messages, through: :consumers
 
   def publish(message_data)
     return unless consumer = self.consumers.order('RAND()').first
@@ -13,5 +14,16 @@ class Channel < ActiveRecord::Base
   end
 
   def broadcast(message_data)
+    consumer_ids = self.consumers.pluck(:id)
+    return 0 if consumer_ids.empty?
+    message = Message.create!(data: message_data)
+    data = consumer_ids.map do |consumer_id|
+      {
+        consumer_id: consumer_id,
+        message_id: message.id
+      }
+    end.to_a
+    consumer_messages = ConsumerMessage.create(data)
+    consumer_messages.count
   end
 end
