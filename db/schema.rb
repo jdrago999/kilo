@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "consumers", ["channel_id", "vhost_user_id"], name: "index_consumers_on_channel_id_and_vhost_user_id", unique: true, using: :btree
-  add_index "consumers", ["vhost_user_id"], name: "fk_rails_26da1ae381", using: :btree
+  add_index "consumers", ["vhost_user_id"], name: "fk_rails_46f719dabf", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "data",       limit: 65535
@@ -60,7 +60,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_94f8f783bd", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_5f7ef123d1", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|
