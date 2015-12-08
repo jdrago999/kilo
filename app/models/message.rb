@@ -1,6 +1,7 @@
 
 class Message < ActiveRecord::Base
-  validates_presence_of :data
+  belongs_to :channel
+  validates_presence_of :data, :channel_id
   has_many :consumer_messages
   has_many :consumers, through: :consumer_messages
 end

@@ -13,9 +13,13 @@ class AddMessages < ActiveRecord::Migration
                     dependent: :delete
 
     create_table :messages do |t|
+      t.references :channel
       t.text :data
       t.timestamps null: false
     end
+    add_index :messages, :created_at
+    add_foreign_key :messages, :channels,
+                    dependent: :delete
 
     create_table :consumer_messages do |t|
       t.references :consumer

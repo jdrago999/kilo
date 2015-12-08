@@ -14,6 +14,7 @@ describe Channel do
   describe 'relationships' do
     it { should belong_to :vhost }
     it { should have_many :consumers }
+    it { should have_many :messages }
     it { should have_many(:consumer_messages).through(:consumers) }
   end
 
@@ -30,25 +31,21 @@ describe Channel do
         @consumer2 = FactoryGirl.create(:consumer, vhost_user: @vhost_user2, channel: @channel)
         @message_data = SecureRandom.hex(32)
 
-        # Publishing returns the id of the consumer the message was assigned to.
-        @assigned_consumer_id = @channel.publish(@message_data)
+        # Publish returns the message.
+        @message = @channel.publish(@message_data)
       end
-      it 'assigns the message to one of the consumers, at random' do
-        expect([@consumer1.id, @consumer2.id]).to include @assigned_consumer_id
-        assigned_consumer_id = Consumer.find(@assigned_consumer_id)
-        expect(assigned_consumer_id.messages.first.data).to eq @message_data
+      it 'creates the message' do
+        expect(@message.channel_id).to eq @channel.id
       end
     end
     context 'when there are no consumers' do
       before do
         @message_data = SecureRandom.hex(32)
 
-        # Publishing returns the id of the consumer the message was assigned to.
-        @assigned_consumer_id = @channel.publish(@message_data)
+        @message = @channel.publish(@message_data)
       end
-      it 'does not assign the message' do
-        expect(@assigned_consumer_id).to be_nil
-        expect(Message.all).to be_empty
+      it 'still creates the message' do
+        expect(@message.channel_id).to eq @channel.id
       end
     end
   end
@@ -66,11 +63,12 @@ describe Channel do
         @consumer2 = FactoryGirl.create(:consumer, vhost_user: @vhost_user2, channel: @channel)
         @message_data = SecureRandom.hex(32)
 
-        # Publishing returns the id of the consumer the message was assigned to.
-        @total_assigned = @channel.broadcast(@message_data)
+        # Broadcast returns the message.
+        @message = @channel.broadcast(@message_data)
       end
       it 'assigns the message to all of the consumers, at once' do
-        expect(@total_assigned).to eq 2
+        expect(@message).to be_a Message
+        expect(@message.channel_id).to eq @channel.id
         expect(@consumer1.messages.first.data).to eq @message_data
         expect(@consumer2.messages.first.data).to eq @message_data
       end
@@ -79,11 +77,11 @@ describe Channel do
       before do
         @message_data = SecureRandom.hex(32)
 
-        # Publishing returns the id of the consumer the message was assigned to.
-        @total_assigned = @channel.broadcast(@message_data)
+        # Broadcast returns the message.
+        @message = @channel.broadcast(@message_data)
       end
       it 'does not assign the message' do
-        expect(@total_assigned).to eq 0
+        expect(@message).to be_nil
       end
     end
   end

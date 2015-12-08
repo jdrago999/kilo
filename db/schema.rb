@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "consumer_messages", ["consumer_id", "message_id"], name: "index_consumer_messages_on_consumer_id_and_message_id", unique: true, using: :btree
-  add_index "consumer_messages", ["message_id"], name: "fk_rails_78e4d1b1c6", using: :btree
+  add_index "consumer_messages", ["message_id"], name: "fk_rails_b59b3d8100", using: :btree
 
   create_table "consumers", force: :cascade do |t|
     t.integer  "channel_id",    limit: 4
@@ -40,13 +40,17 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "consumers", ["channel_id", "vhost_user_id"], name: "index_consumers_on_channel_id_and_vhost_user_id", unique: true, using: :btree
-  add_index "consumers", ["vhost_user_id"], name: "fk_rails_3ca17997e4", using: :btree
+  add_index "consumers", ["vhost_user_id"], name: "fk_rails_b799ae051d", using: :btree
 
   create_table "messages", force: :cascade do |t|
+    t.integer  "channel_id", limit: 4
     t.text     "data",       limit: 65535
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
   end
+
+  add_index "messages", ["channel_id"], name: "fk_rails_97af303337", using: :btree
+  add_index "messages", ["created_at"], name: "index_messages_on_created_at", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "username",        limit: 255,                 null: false
@@ -70,7 +74,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_bdfcab3132", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_f70ea1f762", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|
@@ -86,6 +90,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   add_foreign_key "consumer_messages", "messages"
   add_foreign_key "consumers", "channels"
   add_foreign_key "consumers", "vhost_users"
+  add_foreign_key "messages", "channels"
   add_foreign_key "vhost_users", "users"
   add_foreign_key "vhost_users", "vhosts"
 end
