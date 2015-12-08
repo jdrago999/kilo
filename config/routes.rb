@@ -2,7 +2,14 @@ Rails.application.routes.draw do
 
   scope :api, format: false do
     post 'auth' => 'auth#auth'
-
+    scope 'admin' do
+      scope 'vhosts' do
+        post '' => 'vhost#create'
+        scope ':name' do
+          delete '' => 'vhost#delete'
+        end
+      end
+    end
     scope ':vhost' do
       scope 'channels' do
         get '' => 'channel#list'
