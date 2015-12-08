@@ -17,5 +17,16 @@ class AddMessages < ActiveRecord::Migration
       t.timestamps null: false
     end
 
+    create_table :consumer_messages do |t|
+      t.references :consumer
+      t.references :message
+      t.timestamps null: false
+    end
+
+    add_index :consumer_messages, [:consumer_id, :message_id], unique: true
+    add_foreign_key :consumer_messages, :consumers,
+                    dependent: :delete
+    add_foreign_key :consumer_messages, :messages,
+                    dependent: :delete
   end
 end

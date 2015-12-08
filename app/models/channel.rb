@@ -5,4 +5,10 @@ class Channel < ActiveRecord::Base
   validates_uniqueness_of :name, scope: :vhost_id
 
   has_many :consumers
+
+  def publish(message)
+  end
+
+  def broadcast(message)
+  end
 end

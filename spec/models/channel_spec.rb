@@ -15,4 +15,10 @@ describe Channel do
     it { should belong_to :vhost }
     it { should have_many :consumers }
   end
+
+  describe '#publish(message)' do
+    context 'when there are consumers' do
+      it 'assigns the message to one of the consumers, at random'
+    end
+  end
 end
