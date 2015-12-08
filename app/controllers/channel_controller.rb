@@ -57,9 +57,10 @@ class ChannelController < ApplicationController
     response.headers['Content-Type'] = 'text/event-stream'
     sse = Kilo::SSE.new(response.stream)
     begin
+      consumer = current_vhost_user.consumers.create!(channel: current_channel)
       while true do
-        messages = []
-        sse.write({messages: messages}, {event: 'refresh'})
+        consumer_messages = consumer.consume(params[:prefetch] || 1)
+        sse.write({messages: consumer_messages.map(&:message).map(&:data)}, {event: 'refresh'})
         sleep 1
       end
     rescue IOError
@@ -67,6 +68,7 @@ class ChannelController < ApplicationController
       render text: ''
     ensure
       sse.close
+      consumer.delete
     end
   end
 
