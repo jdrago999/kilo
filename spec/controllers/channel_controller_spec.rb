@@ -261,8 +261,23 @@ describe ChannelController do
               expect(response_stream_data[:messages]).to be_empty
             end
           end
-          ### And there are messages
-          # it returns the messages
+          context 'and there are messages' do
+            before do
+              message_count = (rand + 1 * 10).round
+              @messages = [ ]
+              message_count.times do
+                message =  SecureRandom.hex(10)
+                @messages << message
+                @channel.publish(message)
+              end
+              get :subscribe, @form.merge(prefetch: message_count)
+            end
+            it 'returns as many messages as requested' do
+              returned_messages = response_stream_data[:messages]
+              expect(returned_messages.count).to eq @messages.count
+              expect(returned_messages).to eq @messages
+            end
+          end
         end
         context 'and the client has disconnected' do
           before do
