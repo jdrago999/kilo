@@ -5,7 +5,7 @@ Rails.application.routes.draw do
     scope 'admin' do
       scope 'vhosts' do
         post '' => 'vhost#create'
-        scope ':vhost' do
+        scope ':name' do
           delete '' => 'vhost#delete'
         end
       end
