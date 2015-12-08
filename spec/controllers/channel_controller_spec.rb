@@ -289,4 +289,195 @@ describe ChannelController do
     end
   end
 
+  describe '#publish' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @user = @vhost_user.user
+      @vhost = @vhost_user.vhost
+      controller.sign_in(@vhost_user.user)
+    end
+    context 'when the channel' do
+      context 'exists' do
+        before do
+          @channel = FactoryGirl.create(:channel, vhost: @vhost)
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name
+          }
+        end
+        context 'and the input' do
+          context 'is well-formed' do
+            before do
+              @form[:messages] = [
+                SecureRandom.hex(32),
+                SecureRandom.hex(32)
+              ]
+            end
+            it 'publishes the messages to the channel' do
+              expect_any_instance_of(Channel).to receive(:publish).exactly(@form[:messages].count).times
+              post :publish, @form
+            end
+            it 'returns 200' do
+              post :publish, @form
+              expect(response.status).to eq 200
+            end
+            it 'returns JSON' do
+              post :publish, @form
+              expect{JSON.parse(response.body)}.not_to raise_error
+            end
+          end
+          context 'is not well-formed' do
+            before do
+              # Don't set @form[:messages]
+              post :publish, @form
+            end
+            it 'returns 400' do
+              expect(response.status).to eq 400
+            end
+          end
+        end
+      end
+      context 'does not exist' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: 'fake-channel'
+          }
+          post :publish, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
+  end
+
+  describe '#broadcast' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @user = @vhost_user.user
+      @vhost = @vhost_user.vhost
+      controller.sign_in(@vhost_user.user)
+    end
+    context 'when the channel' do
+      context 'exists' do
+        before do
+          @channel = FactoryGirl.create(:channel, vhost: @vhost)
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name
+          }
+        end
+        context 'and the input' do
+          context 'is well-formed' do
+            before do
+              @form[:messages] = [
+                SecureRandom.hex(32),
+                SecureRandom.hex(32)
+              ]
+            end
+            it 'publishes the messages to the channel' do
+              expect_any_instance_of(Channel).to receive(:broadcast).exactly(@form[:messages].count).times
+              post :broadcast, @form
+            end
+            it 'returns 200' do
+              post :broadcast, @form
+              expect(response.status).to eq 200
+            end
+            it 'returns JSON' do
+              post :broadcast, @form
+              expect{JSON.parse(response.body)}.not_to raise_error
+            end
+          end
+          context 'is not well-formed' do
+            before do
+              # Don't set @form[:messages]
+              post :broadcast, @form
+            end
+            it 'returns 400' do
+              expect(response.status).to eq 400
+            end
+          end
+        end
+      end
+      context 'does not exist' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: 'fake-channel'
+          }
+          post :broadcast, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
+  end
+
+  describe '#ack' do
+    before do
+      @vhost_user = FactoryGirl.create(:vhost_user)
+      @user = @vhost_user.user
+      @vhost = @vhost_user.vhost
+      controller.sign_in(@vhost_user.user)
+    end
+    context 'when the channel' do
+      context 'exists' do
+        before do
+          @channel = FactoryGirl.create(:channel, vhost: @vhost)
+          @form = {
+            vhost: @vhost.name,
+            channel: @channel.name
+          }
+        end
+        context 'and the input' do
+          context 'is well-formed' do
+            before do
+              @messages = FactoryGirl.create_list(:message, 10, channel: @channel)
+              @consumer = FactoryGirl.create(:consumer, vhost_user: @vhost_user, channel: @channel)
+              @consumer_messages = @messages.map do |msg|
+                msg.consumer_messages.create(consumer: @consumer)
+              end
+              @form[:consumer_messages] = @consumer_messages.map(&:id)
+            end
+            it 'deletes the messages' do
+              post :ack, @form
+              expect{@messages.first.reload}.to raise_error StandardError
+            end
+            it 'returns 200' do
+              post :ack, @form
+              expect(response.status).to eq 200
+            end
+            it 'returns JSON' do
+              post :ack, @form
+              expect{JSON.parse(response.body)}.not_to raise_error
+            end
+          end
+          context 'is not well-formed' do
+            before do
+              # Don't set @form[:consumer_messages]
+              post :ack, @form
+            end
+            it 'returns 400' do
+              expect(response.status).to eq 400
+            end
+          end
+        end
+      end
+      context 'does not exist' do
+        before do
+          @form = {
+            vhost: @vhost.name,
+            channel: 'fake-channel'
+          }
+          post :ack, @form
+        end
+        it 'returns 404' do
+          expect(response.status).to eq 404
+        end
+      end
+    end
+  end
+
 end

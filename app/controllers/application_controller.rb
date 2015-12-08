@@ -26,6 +26,10 @@ class ApplicationController < ActionController::Base
     render text: "Not Found", status: :not_found
   end
 
+  rescue_from ActionController::BadRequest do
+    render text: 'Invalid Form Data', status: 400
+  end
+
   def current_user
     return unless @user_id
     @current_user ||= User.find_by(id: @user_id)

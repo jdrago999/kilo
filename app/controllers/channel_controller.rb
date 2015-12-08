@@ -4,14 +4,16 @@ class ChannelController < ApplicationController
   before_filter :authenticate!
   before_filter :require_valid_vhost!
   before_filter :require_valid_channel!, only: [
-    :bind,
     :delete,
     :subscribe,
-    :publish
+    :publish,
+    :broadcast,
+    :ack
   ]
   before_filter :require_vhost_write!, only: [
     :create,
-    :publish
+    :publish,
+    :broadcast
   ]
   before_filter :require_vhost_read!, only: [
     :list,
@@ -66,6 +68,52 @@ class ChannelController < ApplicationController
     ensure
       sse.close
     end
+  end
+
+  def publish
+    raise ActionController::BadRequest.new unless params[:messages].is_a? Array
+
+    messages = Channel.transaction do
+      params[:messages].map do |message_data|
+        current_channel.publish( message_data )
+      end
+    end
+
+    render json: {
+      success: true,
+      published: messages.count
+    }
+  end
+
+  def broadcast
+    raise ActionController::BadRequest.new unless params[:messages].is_a? Array
+
+    messages = Channel.transaction do
+      params[:messages].map do |message_data|
+        current_channel.broadcast( message_data )
+      end
+    end
+
+    render json: {
+      success: true,
+      published: messages.count
+    }
+  end
+
+  def ack
+    raise ActionController::BadRequest.new unless params[:consumer_messages].is_a? Array
+
+    consumer = current_vhost_user.consumers.where(channel_id: current_channel.id).first
+    result = Message.transaction do
+      consumer_messages = consumer.consumer_messages.where(id: params[:consumer_messages])
+      message_ids = consumer_messages.map(&:message_id)
+      consumer_messages.destroy_all
+      Message.where(id: message_ids).destroy_all
+    end
+    render json: {
+      success: true,
+      acked: result
+    }
   end
 
 end

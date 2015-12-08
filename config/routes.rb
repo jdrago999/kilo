@@ -13,15 +13,17 @@ Rails.application.routes.draw do
           scope 'publish' do
             post '' => 'channel#publish'
           end
+          scope 'broadcast' do
+            post '' => 'channel#broadcast'
+          end
           scope 'subscribe' do
             get '' => 'channel#subscribe'
           end
-          scope 'messages' do
-            scope ':message_id' do
-              get '' => 'message#show'
-              put '' => 'message#update'
-              delete '' => 'message#delete'
-            end
+          scope 'ack' do
+            post '' => 'channel#ack'
+          end
+          scope 'nack' do
+            post '' => 'channel#nack'
           end
         end
       end

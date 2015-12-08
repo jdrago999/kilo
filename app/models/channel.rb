@@ -8,6 +8,15 @@ class Channel < ActiveRecord::Base
   has_many :messages
   has_many :consumer_messages, through: :consumers
 
+  def unclaimed_messages
+    # Dear future self,
+    # We just want messages that are not in consumer_messages.
+    messages
+      .joins('LEFT OUTER JOIN consumer_messages on consumer_messages.message_id = messages.id')
+      .select('messages.*,consumer_messages.id as consumer_message_id')
+      .where('consumer_messages.id is null')
+  end
+
   def publish(message_data)
     self.messages.create(data: message_data)
   end
