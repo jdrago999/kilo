@@ -17,14 +17,5 @@ class AddMessages < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    create_table :exchange_messages do |t|
-      t.references :exchange
-      t.references :message
-    end
-    add_index :exchange_messages, [:exchange_id, :message_id], unique: true
-    add_foreign_key :exchange_messages, :exchanges,
-                    dependent: :delete
-    add_foreign_key :exchange_messages, :messages,
-                    dependent: :delete
   end
 end
