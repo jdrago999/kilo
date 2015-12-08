@@ -20,16 +20,8 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",            null: false
   end
 
-  add_index "bonds", ["channel_id"], name: "fk_rails_e4f102f80c", using: :btree
+  add_index "bonds", ["channel_id"], name: "fk_rails_1545a26280", using: :btree
   add_index "bonds", ["exchange_id", "channel_id"], name: "index_bonds_on_exchange_id_and_channel_id", unique: true, using: :btree
-
-  create_table "channel_messages", force: :cascade do |t|
-    t.integer "channel_id", limit: 4
-    t.integer "message_id", limit: 4
-  end
-
-  add_index "channel_messages", ["channel_id", "message_id"], name: "index_channel_messages_on_channel_id_and_message_id", unique: true, using: :btree
-  add_index "channel_messages", ["message_id"], name: "fk_rails_b746f9a29c", using: :btree
 
   create_table "channels", force: :cascade do |t|
     t.integer  "vhost_id",   limit: 4
@@ -48,6 +40,14 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "consumers", ["channel_id", "user_id"], name: "index_consumers_on_channel_id_and_user_id", unique: true, using: :btree
+
+  create_table "exchange_messages", force: :cascade do |t|
+    t.integer "exchange_id", limit: 4
+    t.integer "message_id",  limit: 4
+  end
+
+  add_index "exchange_messages", ["exchange_id", "message_id"], name: "index_exchange_messages_on_exchange_id_and_message_id", unique: true, using: :btree
+  add_index "exchange_messages", ["message_id"], name: "fk_rails_918588448b", using: :btree
 
   create_table "exchanges", force: :cascade do |t|
     t.integer  "vhost_id",   limit: 4
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_53ebf7361e", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_f0ad9c956b", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|
@@ -100,10 +100,10 @@ ActiveRecord::Schema.define(version: 20151207065919) do
 
   add_foreign_key "bonds", "channels"
   add_foreign_key "bonds", "exchanges"
-  add_foreign_key "channel_messages", "channels"
-  add_foreign_key "channel_messages", "messages"
   add_foreign_key "channels", "vhosts"
   add_foreign_key "consumers", "channels"
+  add_foreign_key "exchange_messages", "exchanges"
+  add_foreign_key "exchange_messages", "messages"
   add_foreign_key "exchanges", "vhosts"
   add_foreign_key "vhost_users", "users"
   add_foreign_key "vhost_users", "vhosts"

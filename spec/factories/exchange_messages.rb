@@ -1,7 +1,7 @@
 
 FactoryGirl.define do
-  factory :channel_message do
-    association :channel
+  factory :exchange_message do
+    association :exchange
     association :message
   end
 end

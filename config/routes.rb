@@ -33,7 +33,6 @@ Rails.application.routes.draw do
             post '' => 'channel#publish'
           end
           scope 'messages' do
-            post '' => 'message#create'
             scope ':message_id' do
               get '' => 'message#show'
               put '' => 'message#update'

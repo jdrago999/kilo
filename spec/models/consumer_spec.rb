@@ -12,7 +12,7 @@ describe Consumer do
   end
 
   describe 'relationships' do
-    it { should have_many :channel_messages }
-    it { should have_many(:messages).through(:channel_messages) }
+    it { should belong_to :channel }
+    it { should belong_to :user }
   end
 end

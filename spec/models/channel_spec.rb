@@ -14,6 +14,7 @@ describe Channel do
   describe 'relationships' do
     it { should belong_to :vhost }
     it { should have_many :bonds }
+    it { should have_many :consumers }
     it { should have_many(:exchanges).through(:bonds) }
   end
 end

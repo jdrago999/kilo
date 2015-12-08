@@ -507,6 +507,7 @@ describe ChannelController do
             channel: @channel.name
           }
         end
+        # XXX: It creates a consumer
         context 'and the client is still connected' do
           context 'and there are no messages' do
             before do
@@ -520,6 +521,8 @@ describe ChannelController do
               expect(response_stream_data[:messages]).to be_empty
             end
           end
+          ### And there are messages
+          # it returns the messages
         end
         context 'and the client has disconnected' do
           before do
@@ -542,6 +545,22 @@ describe ChannelController do
         it 'returns 404' do
           expect(response.status).to eq 404
         end
+      end
+    end
+  end
+
+  describe '#publish' do
+    context 'when the channel' do
+      context 'exists' do
+        it 'returns 200'
+        it 'returns JSON'
+        context 'the JSON returned' do
+          it 'has success: true'
+        end
+        it 'adds a message to each exchange it is bound to'
+      end
+      context 'does not exist' do
+        it 'returns 404'
       end
     end
   end

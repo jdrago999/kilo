@@ -7,4 +7,6 @@ class Exchange < ActiveRecord::Base
 
   has_many :bonds
   has_many :channels, through: :bonds
+  has_many :exchange_messages
+  has_many :messages, through: :exchange_messages
 end

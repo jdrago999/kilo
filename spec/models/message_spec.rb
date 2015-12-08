@@ -10,7 +10,7 @@ describe Message do
   end
 
   describe 'relationships' do
-    it { should have_many :channel_messages }
-    it { should have_many(:channels).through(:channel_messages) }
+    it { should have_many :exchange_messages }
+    it { should have_many(:exchanges).through(:exchange_messages) }
   end
 end

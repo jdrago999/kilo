@@ -6,4 +6,5 @@ class Channel < ActiveRecord::Base
 
   has_many :bonds
   has_many :exchanges, through: :bonds
+  has_many :consumers
 end

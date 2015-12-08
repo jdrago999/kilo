@@ -9,12 +9,14 @@ class ChannelController < ApplicationController
     :bonds,
     :get_bond,
     :unbind,
-    :subscribe
+    :subscribe,
+    :publish
   ]
   before_filter :require_vhost_write!, only: [
     :create,
     :bind,
-    :unbind
+    :unbind,
+    :publish
   ]
   before_filter :require_vhost_read!, only: [
     :list,
@@ -126,6 +128,16 @@ class ChannelController < ApplicationController
     ensure
       sse.close
     end
+  end
+
+  def publish
+    message = Message.create!(data: params[:message])
+
+
+    render json: {
+      success: true,
+      path: 'foo'
+    }
   end
 
 end
