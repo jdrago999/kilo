@@ -2,6 +2,6 @@
 FactoryGirl.define do
   factory :consumer do
     association :channel
-    association :user
+    association :vhost_user
   end
 end

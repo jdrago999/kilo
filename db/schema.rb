@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",            null: false
   end
 
-  add_index "bonds", ["channel_id"], name: "fk_rails_d82188bde1", using: :btree
+  add_index "bonds", ["channel_id"], name: "fk_rails_cc45b332b1", using: :btree
   add_index "bonds", ["exchange_id", "channel_id"], name: "index_bonds_on_exchange_id_and_channel_id", unique: true, using: :btree
 
   create_table "channels", force: :cascade do |t|
@@ -33,13 +33,14 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   add_index "channels", ["vhost_id", "name"], name: "index_channels_on_vhost_id_and_name", unique: true, using: :btree
 
   create_table "consumers", force: :cascade do |t|
-    t.integer  "channel_id", limit: 4
-    t.integer  "user_id",    limit: 4
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.integer  "channel_id",    limit: 4
+    t.integer  "vhost_user_id", limit: 4
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
-  add_index "consumers", ["channel_id", "user_id"], name: "index_consumers_on_channel_id_and_user_id", unique: true, using: :btree
+  add_index "consumers", ["channel_id", "vhost_user_id"], name: "index_consumers_on_channel_id_and_vhost_user_id", unique: true, using: :btree
+  add_index "consumers", ["vhost_user_id"], name: "fk_rails_84dc54690e", using: :btree
 
   create_table "exchange_messages", force: :cascade do |t|
     t.integer "exchange_id", limit: 4
@@ -47,7 +48,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "exchange_messages", ["exchange_id", "message_id"], name: "index_exchange_messages_on_exchange_id_and_message_id", unique: true, using: :btree
-  add_index "exchange_messages", ["message_id"], name: "fk_rails_90567f0149", using: :btree
+  add_index "exchange_messages", ["message_id"], name: "fk_rails_a36f529f6c", using: :btree
 
   create_table "exchanges", force: :cascade do |t|
     t.integer  "vhost_id",   limit: 4
@@ -87,7 +88,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_67be07e0b7", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_c031731f10", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|
@@ -102,6 +103,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   add_foreign_key "bonds", "exchanges"
   add_foreign_key "channels", "vhosts"
   add_foreign_key "consumers", "channels"
+  add_foreign_key "consumers", "vhost_users"
   add_foreign_key "exchange_messages", "exchanges"
   add_foreign_key "exchange_messages", "messages"
   add_foreign_key "exchanges", "vhosts"

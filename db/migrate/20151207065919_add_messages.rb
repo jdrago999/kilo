@@ -2,12 +2,14 @@ class AddMessages < ActiveRecord::Migration
   def change
     create_table :consumers do |t|
       t.references :channel
-      t.references :user
+      t.references :vhost_user
       t.timestamps null: false
     end
 
-    add_index :consumers, [:channel_id, :user_id], unique: true
+    add_index :consumers, [:channel_id, :vhost_user_id], unique: true
     add_foreign_key :consumers, :channels,
+                    dependent: :delete
+    add_foreign_key :consumers, :vhost_users,
                     dependent: :delete
 
     create_table :messages do |t|

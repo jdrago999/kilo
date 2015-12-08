@@ -52,10 +52,8 @@ class ExchangeController < ApplicationController
 
 
   def publish
-byebug
     exchange = current_vhost.exchanges.find_by(name: params[:exchange])
     message = exchange.messages.create(data: params[:message])
-byebug
 
     render json: {
       success: true,

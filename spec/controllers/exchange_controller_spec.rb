@@ -246,10 +246,7 @@ describe ExchangeController do
                 message: {hello: :world}.to_json
               }
             end
-            it 'returns 200' do
-byebug
-puts ""
-            end
+            it 'returns 200'
             it 'returns JSON'
             context 'the JSON returned' do
               it 'has success: true'
