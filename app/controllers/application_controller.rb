@@ -56,6 +56,7 @@ class ApplicationController < ActionController::Base
   def authenticate!
     sent_token = session[:auth_token]
     token = self.redis.get("kilo.auth-token:#{session[:uid]}") or raise ::AuthorizationException.new
+    sent_token == token or raise ::AuthorizationException.new
 
     if params.has_key? :vhost
       # Also check vhost:
@@ -64,10 +65,6 @@ class ApplicationController < ActionController::Base
       # Also check the vhost_user exists:
       @current_vhost_user = current_user.vhost_users.find_by(vhost_id: @current_vhost.id) or raise ::AuthorizationException.new
     end
-  end
-
-  def require_vhost_conf!
-    current_vhost_user.conf or raise ::AuthorizationException.new
   end
 
   def require_vhost_read!
@@ -84,6 +81,12 @@ class ApplicationController < ActionController::Base
 
   def require_valid_channel!
     @current_channel = current_vhost.channels.find_by(name: params[:channel]) or raise ::ActionController::RoutingError.new 'not found'
+  end
+
+  def require_admin_user!
+    unless current_user.is_admin
+      raise ::AuthorizationException.new
+    end
   end
 
   def parse_json_params
