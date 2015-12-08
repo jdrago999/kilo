@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "consumer_messages", ["consumer_id", "message_id"], name: "index_consumer_messages_on_consumer_id_and_message_id", unique: true, using: :btree
-  add_index "consumer_messages", ["message_id"], name: "fk_rails_6bf807fbbf", using: :btree
+  add_index "consumer_messages", ["message_id"], name: "fk_rails_78e4d1b1c6", using: :btree
 
   create_table "consumers", force: :cascade do |t|
     t.integer  "channel_id",    limit: 4
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
   end
 
   add_index "consumers", ["channel_id", "vhost_user_id"], name: "index_consumers_on_channel_id_and_vhost_user_id", unique: true, using: :btree
-  add_index "consumers", ["vhost_user_id"], name: "fk_rails_999d6672ae", using: :btree
+  add_index "consumers", ["vhost_user_id"], name: "fk_rails_3ca17997e4", using: :btree
 
   create_table "messages", force: :cascade do |t|
     t.text     "data",       limit: 65535
@@ -70,7 +70,7 @@ ActiveRecord::Schema.define(version: 20151207065919) do
     t.datetime "updated_at",                           null: false
   end
 
-  add_index "vhost_users", ["user_id"], name: "fk_rails_5c6ef7f70b", using: :btree
+  add_index "vhost_users", ["user_id"], name: "fk_rails_bdfcab3132", using: :btree
   add_index "vhost_users", ["vhost_id", "user_id"], name: "index_vhost_users_on_vhost_id_and_user_id", unique: true, using: :btree
 
   create_table "vhosts", force: :cascade do |t|

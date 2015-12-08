@@ -6,9 +6,12 @@ class Channel < ActiveRecord::Base
 
   has_many :consumers
 
-  def publish(message)
+  def publish(message_data)
+    return unless consumer = self.consumers.order('RAND()').first
+    message = consumer.messages.create(data: message_data)
+    consumer.id
   end
 
-  def broadcast(message)
+  def broadcast(message_data)
   end
 end
