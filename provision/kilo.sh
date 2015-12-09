@@ -18,6 +18,7 @@ sudo apt-get install -y \
   libssl-dev \
   libmysql++-dev \
   nodejs \
+  graphviz \
   nscd
 
 # We need to update /etc/resolv.conf:
